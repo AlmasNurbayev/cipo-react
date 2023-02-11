@@ -8,7 +8,8 @@ export default function Post(props) {
           <strong>{props.index}. {props.post.title}</strong>
           <div>
           id: {props.post.id}<p/>
-          body: {props.post.body}
+          body: {props.post.body}<p/>
+          size: {props.post.size}<p/>
           </div>
         </div>
         <div className='post__btns'>

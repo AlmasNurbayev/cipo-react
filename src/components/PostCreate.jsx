@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import MyInput from './UI/MyInput';
 import MyButton from './UI/MyButton';
 
-export default function PostForm(props) {
+export default function PostCreate(props) {
     const [post, setPost] = useState({title:'', body:'', id:''});
 
     //const bodyInputRef = useRef(); 

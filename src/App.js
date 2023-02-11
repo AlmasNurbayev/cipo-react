@@ -6,14 +6,14 @@ import PostList from './components/PostList';
 import './styles/App.css'
 import MyButton from './components/UI/MyButton';
 import MyInput from './components/UI/MyInput';
-import PostForm from './components/PostForm';
+import PostCreate from './components/PostCreate';
 
 function App() {
 
   const [posts, setPosts] = useState([
-    { id: 1, title: 'JavaScript', body: 'description' },
-    { id: 2, title: 'TypeScript', body: 'description' },
-    { id: 3, title: 'TypeScript 2', body: 'description' }
+    { id: 1, title: 'JavaScript', body: 'TS', size: '31'},
+    { id: 2, title: 'Angular', body: 'MS', size: '32'},
+    { id: 3, title: 'Vue', body: 'KS', size: '33'}
   ]);
 
   function createPost(newPost) {
@@ -26,11 +26,8 @@ function App() {
 
   return (
     <div className="App">
-      <PostForm create={createPost}/>
-      
-      {posts.length > 0 
-      ? <PostList remove={removePost} posts={posts} title='Список постов:' />
-      : <h1 style={{textAlign: 'center'}}>Посты не найдены</h1>}
+      <PostCreate create={createPost}/>
+      <PostList remove={removePost} posts={posts} title='Список постов:' />
     </div>
   );
 }
