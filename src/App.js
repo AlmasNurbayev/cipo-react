@@ -38,6 +38,6 @@ function App() {
       <PostList remove={removePost} posts={posts} title='Список постов:' />
     </div>
   );
-}
+} 
 
 export default App;
