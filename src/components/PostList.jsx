@@ -1,33 +1,15 @@
 import React, { useState, useMemo } from 'react'
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import Post from './Post'
 import PostFilter from './PostFilter';
-import MyInput from './UI/MyInput';
-import MySelect from './UI/MySelect'
+import { usePosts } from '../hooks/usePost';
 
 export default function PostList(props) {
 
 
   const [filter, setFilter] = useState({ sort: '', query: '' });
-  //let finalPosts = props.posts;
-
-  const sortedPosts = useMemo(() => {
-    console.log('sorting...');
-    if (filter.sort) {
-      console.log(filter.sort);
-      if (filter.sort === 'id') {
-        return [...props.posts].sort((a, b) => a[filter.sort] - b[filter.sort]);
-      } else {
-        console.log('string');
-        return [...props.posts].sort((a, b) => a[filter.sort].localeCompare(b[filter.sort]));
-      }
-    } else {
-      return props.posts;
-    }
-  }, [filter.sort, props.posts])
-
-  const sortedSearchedPosts = useMemo(() => {
-    return sortedPosts.filter(post => post.title.toLowerCase().includes(filter.query))
-  }, [filter.query, sortedPosts])
+  
+  const sortedSearchedPosts = usePosts(props.posts, filter.sort, filter.query);
 
 
   return (
@@ -38,11 +20,18 @@ export default function PostList(props) {
       }
       <PostFilter filter={filter} setFilter={setFilter} />
       <hr></hr>
-      {sortedSearchedPosts.map((post, index) =>
-        <Post remove={props.remove} index={post.id} post={post} key={post.id} />
-      )
-      }
-
+      <TransitionGroup>
+        {sortedSearchedPosts.map((post, index) =>
+          <CSSTransition
+            key={post.id}
+            timeout={500}
+            classNames='post'
+            >
+          <Post remove={props.remove} index={post.id} post={post} key={post.id} />
+          </CSSTransition>
+        )
+        }
+      </TransitionGroup>
 
     </div>
   )
