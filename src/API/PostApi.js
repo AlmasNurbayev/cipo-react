@@ -1,17 +1,16 @@
 import axios from "axios";
 
-export async function getAll() {
+export async function getAll(limit, page) {
     const config = {
       method: "get",
-      url: "https://jsonplaceholder.typicode.com/users/1/posts",
-      timeout: 5000
+      url: `https://jsonplaceholder.typicode.com/posts`,
+      timeout: 5000,
+      params: {
+        _limit: limit,
+        _page: page
+      }
     };
-    try {
-        const response = await axios(config);
         console.log('loading data');
-        return response.data; 
-    } catch (err) {
-      console.log(err);
-      throw err;
-    }
+        const response = await axios(config);
+        return response; 
   }
