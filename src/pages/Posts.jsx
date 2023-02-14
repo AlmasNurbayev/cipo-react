@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react'
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
-import Post from './Post'
-import PostFilter from './PostFilter';
+import Post from '../components/Post';
+import PostFilter from '../components/PostFilter';
 import { usePosts } from '../hooks/usePost';
 import { getAll } from './../API/PostApi';
 import useFetching from './../hooks/useFetching';
 import { getPageCount } from './../utils/pages';
-import PostCreate from './PostCreate.jsx';
-import MyModal from './UI/MyModal.jsx';
-import Loader from './UI/Loader.jsx';
-import MyButton from './UI/MyButton';
+import PostCreate from '../components/PostCreate.jsx';
+import MyModal from '../components/UI/MyModal.jsx';
+import Loader from '../components/UI/Loader.jsx';
+import MyButton from '../components/UI/MyButton';
 import usePages from '../hooks/usePages';
-import Pages from './UI/Pages';
+import Pages from '../components/UI/Pages';
+import classes from '../styles/App.css';
+ 
 
-export default function PostList(props) {
+export default function Posts(props) {
 
   const [posts, setPosts] = useState([{id:1, title:'123'}]);
   const [filter, setFilter] = useState({ sort: '', query: '' });
@@ -24,14 +26,15 @@ export default function PostList(props) {
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(1);
 
-
-  useEffect(() => { loadingPosts() }, []);
+  useEffect(() => { loadingPosts() }, [page]);
 
   const [loadingPosts, isPostLoading, postError] = useFetching(async () => {
     console.log(limit, page);
     const res = await getAll(limit, page);
+    console.log(res.data);
     setPosts(res.data);
     setTotalPages(getPageCount(res.headers['x-total-count'], limit));
+    
   });
   //console.log(totalPages);
 
@@ -49,16 +52,17 @@ export default function PostList(props) {
   }
 
   function upLoadPosts(index) {
-    console.log('receive page form pages: ', index);
     setPage(index);
-    loadingPosts();
-    //setPosts(posts);
+    console.log('receive page from index: ', index);
+    console.log('receive page from page: ', page);
+
   }
 
   
 
   return (
-    <div>
+    <div className='posts'>
+      
       <MyButton style={{marginTop: 20}} onClick={()=>setModal(true)}>Create user</MyButton> 
       {sortedSearchedPosts.length > 0
         ? <h1 style={{ textAlign: 'center' }}>{props.title}</h1>
@@ -77,19 +81,19 @@ export default function PostList(props) {
       
       <hr></hr>
       <Pages array={limitArray} limit={limit} onClick={upLoadPosts}/>
-      <TransitionGroup>
-        {sortedSearchedPosts.map((post, index) =>
-          <CSSTransition
-            key={post.id}
-            timeout={500}
-            classNames='post'
-          >
+      {/* <TransitionGroup> */}
+        {sortedSearchedPosts.map((post) =>
+          // <CSSTransition
+          //   key={post.id}
+          //   timeout={500}
+          //   classNames='post'
+          // // >
             <Post remove={removePost} index={post.id} post={post} key={post.id} />
-          </CSSTransition>
+          // </CSSTransition>
         )
         }
-      </TransitionGroup>
-        
+      {/* </TransitionGroup> */}
+      
     </div>
   )
 }

@@ -1,27 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import PostList from './components/PostList';
-import './styles/App.css'
-
-import MyButton from './components/UI/MyButton.jsx';
-
-
-
+import React from 'react';
+import AppRouter from './components/AppRouter';
+import { BrowserRouter } from 'react-router-dom';
+import Navbar from './components/UI/Navbar';
 
 function App() {
-
-
-  
-  const [modal, setModal] = useState();  
-
+  //<Posts title='Список постов:' />
 
   return (
-    <div className="App">
-    
-
-    <PostList title='Список постов:' />
-      
-    </div>
+    <BrowserRouter>
+      <Navbar/>
+      <AppRouter/>
+    </BrowserRouter>
   );
-} 
+}
 
 export default App;

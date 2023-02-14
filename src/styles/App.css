@@ -7,10 +7,17 @@
 #root {
     display: flex;
     justify-content: center;
+    flex-direction: column;
+    align-items: center;
 }
 
 .App {
     width: 800px
+}
+
+.posts {
+  margin: 20px;
+  width: 80%;
 }
 
 .post {
@@ -27,16 +34,23 @@
     transform: translateX(-350px);
     opacity: 0;
   }
+
 .post-enter-active {
     transform: translateX(0px);
     /* opacity: 1; */
     transition: opacity 500ms ease-in;
   }
+
 .post-exit {
     opacity: 1;
   }
+
 .post-exit-active {
     transform: translateX(-350px);
     /* opacity: 0; */
     transition: opacity 500ms ease-in;
   }
+
+.post__btns {
+  display: flex;
+}

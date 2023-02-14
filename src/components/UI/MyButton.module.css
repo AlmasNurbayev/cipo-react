@@ -6,4 +6,5 @@
     border: 2px solid teal;
     cursor: pointer;
     border-radius: 4px;
+    display: flex;
 }
