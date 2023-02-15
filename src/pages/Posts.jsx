@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import Post from '../components/Post';
 import PostFilter from '../components/PostFilter';
@@ -13,11 +13,12 @@ import MyButton from '../components/UI/MyButton';
 import usePages from '../hooks/usePages';
 import Pages from '../components/UI/Pages';
 import classes from '../styles/App.css';
+import { useObserver } from '../hooks/useObserver';
  
 
 export default function Posts(props) {
 
-  const [posts, setPosts] = useState([{id:1, title:'123'}]);
+  const [posts, setPosts] = useState([]);
   const [filter, setFilter] = useState({ sort: '', query: '' });
   const [modal, setModal] = useState();
   const sortedSearchedPosts = usePosts(posts, filter.sort, filter.query);
@@ -25,17 +26,30 @@ export default function Posts(props) {
   const [totalPages, setTotalPages] = useState(0);
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(1);
+  const lastElement = useRef();
+
 
   useEffect(() => { loadingPosts() }, [page]);
 
-  const [loadingPosts, isPostLoading, postError] = useFetching(async () => {
-    console.log(limit, page);
+  const [loadingPosts, isPostsLoading, postError] = useFetching(async () => {
+    console.log(totalPages, page);
     const res = await getAll(limit, page);
     console.log(res.data);
-    setPosts(res.data);
+    setPosts([...posts, ...res.data]);
     setTotalPages(getPageCount(res.headers['x-total-count'], limit));
     
   });
+
+  useObserver(lastElement, page < totalPages, isPostsLoading, ()=>{
+      setPage(page + 1);
+      console.log(page);
+    }
+  );
+
+
+
+
+
   //console.log(totalPages);
 
   const limitArray = usePages(totalPages, limit);
@@ -72,7 +86,7 @@ export default function Posts(props) {
       <MyModal visible={modal} setVisible={setModal}>
         <PostCreate create={createPost} />
       </MyModal>
-      {isPostLoading &&
+      {isPostsLoading &&
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: 50 }}>
           <Loader />
         </div>
@@ -80,7 +94,7 @@ export default function Posts(props) {
       <PostFilter filter={filter} setFilter={setFilter} />
       
       <hr></hr>
-      <Pages array={limitArray} limit={limit} onClick={upLoadPosts}/>
+      <Pages array={limitArray} limit={limit} currentPage={page} onClick={upLoadPosts}/>
       {/* <TransitionGroup> */}
         {sortedSearchedPosts.map((post) =>
           // <CSSTransition
@@ -93,7 +107,7 @@ export default function Posts(props) {
         )
         }
       {/* </TransitionGroup> */}
-      
+      <div ref={lastElement} style={{height: 20, background: 'LightGray'}}></div>
     </div>
   )
 }

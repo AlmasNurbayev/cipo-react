@@ -2,11 +2,14 @@ import React from 'react';
 import { useState } from 'react';
 
 
-export default function Pages({array, limit, onClick}) {
+export default function Pages({array, limit, currentPage, onClick}) {
 
   
-
   const [activeIndex, setActiveIndex] = useState(1);
+
+  if (activeIndex != currentPage) {setActiveIndex(currentPage)}
+
+  console.log('rerender pagination ',  currentPage);
 
    return (
     <ul className={'pagination'}>
@@ -21,6 +24,8 @@ export default function Pages({array, limit, onClick}) {
               //loadingPosts(index+1);
             }}
             className={index+1 === activeIndex ? 'page-item-active' : 'page-item'}  
+
+
             style={{cursor: 'pointer'}} 
             key={'page' + index+1}>
             <a className="page-link" 
