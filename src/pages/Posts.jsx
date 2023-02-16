@@ -10,6 +10,7 @@ import PostCreate from '../components/PostCreate.jsx';
 import MyModal from '../components/UI/MyModal.jsx';
 import Loader from '../components/UI/Loader.jsx';
 import MyButton from '../components/UI/MyButton';
+import MySelect from '../components/UI/MySelect';
 import usePages from '../hooks/usePages';
 import Pages from '../components/UI/Pages';
 import classes from '../styles/App.css';
@@ -18,7 +19,7 @@ import { useObserver } from '../hooks/useObserver';
 
 export default function Posts(props) {
 
-  const [posts, setPosts] = useState([]);
+  let [posts, setPosts] = useState([]);
   const [filter, setFilter] = useState({ sort: '', query: '' });
   const [modal, setModal] = useState();
   const sortedSearchedPosts = usePosts(posts, filter.sort, filter.query);
@@ -29,33 +30,25 @@ export default function Posts(props) {
   const lastElement = useRef();
 
 
-  useEffect(() => { loadingPosts() }, [page]);
+  useEffect(() => { loadingPosts() }, [page, limit]);
 
   const [loadingPosts, isPostsLoading, postError] = useFetching(async () => {
+
     console.log(totalPages, page);
     const res = await getAll(limit, page);
     console.log(res.data);
-    setPosts([...posts, ...res.data]);
     setTotalPages(getPageCount(res.headers['x-total-count'], limit));
-    
+    setPosts([...posts, ...res.data]);
   });
 
   useObserver(lastElement, page < totalPages, isPostsLoading, ()=>{
-      setPage(page + 1);
-      console.log(page);
+      //setPage(page + 1); // временно выключено обновление при прокрутке страницы, т.к. ломается лимит и вся пагинация 
+      console.log('observer', page);
     }
   );
 
-
-
-
-
-  //console.log(totalPages);
-
   const limitArray = usePages(totalPages, limit);
-  //console.log(limitArray);
-
-
+  
   function createPost(newPost) {
     setPosts([...posts, { ...newPost }]);
     setModal(false);
@@ -66,13 +59,26 @@ export default function Posts(props) {
   }
 
   function upLoadPosts(index) {
-    setPage(index);
+
+    if (index != page) {
+      setPosts([]);
+      // posts = [];
+      // loadingPosts();
+      setPage(index);
+    }
+     
+    
     console.log('receive page from index: ', index);
     console.log('receive page from page: ', page);
-
   }
 
-  
+  function changeLimit(value) {
+    setLimit(value); 
+    setPage(1);
+    //posts = [];
+    setPosts([]);
+    
+  }
 
   return (
     <div className='posts'>
@@ -92,18 +98,17 @@ export default function Posts(props) {
         </div>
       }
       <PostFilter filter={filter} setFilter={setFilter} />
-      
+      Кол-во элементов на странице: <MySelect
+        value = {limit}
+        onChange={value => changeLimit(value)}
+        defaultValue = 'Кол-во элементов на странице'
+        list={[{value: 10, name: '10'}, {value: 20,name: '20'}, {value: 30, name: '30'}]} 
+      ></MySelect>
       <hr></hr>
       <Pages array={limitArray} limit={limit} currentPage={page} onClick={upLoadPosts}/>
       {/* <TransitionGroup> */}
         {sortedSearchedPosts.map((post) =>
-          // <CSSTransition
-          //   key={post.id}
-          //   timeout={500}
-          //   classNames='post'
-          // // >
             <Post remove={removePost} index={post.id} post={post} key={post.id} />
-          // </CSSTransition>
         )
         }
       {/* </TransitionGroup> */}
